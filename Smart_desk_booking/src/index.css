@@ -1,0 +1,49 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@layer base {
+  body {
+    @apply m-0 min-h-screen bg-backgroundLight dark:bg-backgroundDark text-gray-900 dark:text-textDark;
+  }
+
+  a {
+    @apply text-primary dark:text-accent no-underline;
+  }
+  
+  a:hover {
+    @apply text-secondary dark:text-primary;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-bold text-primary dark:text-textDark;
+  }
+}
+
+#root {
+  @apply min-h-screen flex flex-col;
+}
+
+@media (prefers-color-scheme: dark) {
+  ::-webkit-scrollbar {
+    width: 12px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-gray-800;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-secondary rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-accent;
+  }
+}
