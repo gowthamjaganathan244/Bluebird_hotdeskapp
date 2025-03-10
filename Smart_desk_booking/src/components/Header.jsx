@@ -31,14 +31,14 @@ const Header = ({ isDarkMode, toggleTheme, isLoggedIn = true, logoutUser = () =>
     <header className="fixed top-0 left-0 right-0 z-50 border-b bg-white shadow-sm">
       <div className="container mx-auto">
         <nav className="flex items-center justify-between h-16 px-4">
-          <Link to="/" className="flex items-center space-x-2">
+          <div to="/" className="flex items-center space-x-2">
             <img
               src={companyLogo}
               alt="Bluebird Logo"
               className="w-12 h-12 text-blue-500 flex-shrink-0"
             />
             <h1 className="text-3xl font-bold" style={{ color: '#0C184F' }}>Bluebird</h1>
-          </Link>
+          </div>
           
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-3">
