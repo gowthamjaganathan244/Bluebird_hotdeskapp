@@ -36,7 +36,7 @@ const Home = () => {
               {/* Call to action with improved hover states */}
               <Link 
   to="/booking" 
-  className="block w-full py-4 bg-blue-600 hover:bg-blue-700 text-white dark:text-white rounded-xl transition-all transform hover:scale-[1.02] text-center font-medium shadow-md"
+  className="block w-full py-4 bg-blue-600 hover:bg-blue-100 text-white dark:text-white rounded-xl transition-all transform hover:scale-[1.02] text-center font-medium shadow-md"
 >
   <div className="flex items-center justify-center gap-2">
     <FaCalendarCheck size={20} />
