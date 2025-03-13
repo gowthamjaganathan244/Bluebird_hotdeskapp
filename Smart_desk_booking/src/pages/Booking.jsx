@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Laptop, User } from "lucide-react";
 import { FaCheckCircle, FaTimesCircle } from "react-icons/fa";
 import { MdFilterList } from "react-icons/md";
+import DatePicker from "react-multi-date-picker"; // New: multi-date picker import
 
 const Booking = () => {
   // Initial desk data structure - organized as a floor map
@@ -25,59 +26,71 @@ const Booking = () => {
   };
 
   const [desks, setDesks] = useState({});
-  const [selectedDate, setSelectedDate] = useState("");
+  const [selectedDates, setSelectedDates] = useState([]); // Updated for multiple dates
   const [selectedDesk, setSelectedDesk] = useState(null);
   const [recurrence, setRecurrence] = useState("none");
   const [filter, setFilter] = useState("all");
   const [confirmation, setConfirmation] = useState(null);
 
-  // Handle Date Change and Reset Desk Availability
-  const handleDateChange = (e) => {
-    const newDate = e.target.value;
-    setSelectedDate(newDate);
+  // Handle Dates Change and Initialize Desk Availability for each selected date
+  const handleDatesChange = (dates) => {
+    // Convert dates to formatted strings ("YYYY-MM-DD")
+    const formattedDates = dates.map(date => date.format("YYYY-MM-DD"));
+    setSelectedDates(formattedDates);
 
-    if (!desks[newDate]) {
-      // Initialize all desks as available for the new date
-      const allDesks = [
-        ...initialDesksData.leftSection.map(desk => ({ ...desk, status: "available" })),
-        ...initialDesksData.rightSection.map(desk => ({ ...desk, status: "available" }))
-      ];
-      
-      setDesks((prev) => ({
-        ...prev,
-        [newDate]: allDesks,
-      }));
-    }
+    // Initialize desks as available for any new date
+    setDesks(prev => {
+      const newDesks = { ...prev };
+      formattedDates.forEach(date => {
+        if (!newDesks[date]) {
+          newDesks[date] = [
+            ...initialDesksData.leftSection.map(desk => ({ ...desk, status: "available" })),
+            ...initialDesksData.rightSection.map(desk => ({ ...desk, status: "available" }))
+          ];
+        }
+      });
+      return newDesks;
+    });
   };
 
   // Handle Desk Selection
   const handleDeskClick = (deskId) => {
-    if (!selectedDate) {
-      alert("Please select a date before choosing a desk.");
+    if (selectedDates.length === 0) {
+      alert("Please select at least one date before choosing a desk.");
       return;
     }
-
     setSelectedDesk(deskId);
   };
 
-  // Handle Booking Submission
+  // Handle Booking Submission for multiple dates
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (!selectedDate || !selectedDesk) {
-      alert("Please select a date and a desk before booking.");
+    if (selectedDates.length === 0 || !selectedDesk) {
+      alert("Please select at least one date and a desk before booking.");
       return;
     }
 
-    setDesks((prevDesks) => ({
-      ...prevDesks,
-      [selectedDate]: prevDesks[selectedDate].map((desk) =>
-        desk.id === selectedDesk ? { ...desk, status: "booked" } : desk
-      ),
-    }));
+    setDesks(prevDesks => {
+      const updatedDesks = { ...prevDesks };
+      selectedDates.forEach(date => {
+        // If desks for the date are not initialized, initialize them
+        if (!updatedDesks[date]) {
+          updatedDesks[date] = [
+            ...initialDesksData.leftSection.map(desk => ({ ...desk, status: "available" })),
+            ...initialDesksData.rightSection.map(desk => ({ ...desk, status: "available" }))
+          ];
+        }
+        // Update the booking status for the selected desk for each date
+        updatedDesks[date] = updatedDesks[date].map(desk =>
+          desk.id === selectedDesk ? { ...desk, status: "booked" } : desk
+        );
+      });
+      return updatedDesks;
+    });
 
     setConfirmation({
-      date: selectedDate,
+      dates: selectedDates,
       desk: selectedDesk,
       recurrence: recurrence === "none" ? "No recurrence" : recurrence,
     });
@@ -86,8 +99,9 @@ const Booking = () => {
     setSelectedDesk(null);
   };
 
-  // Get desks based on the selected date
-  const currentDesks = selectedDate ? desks[selectedDate] || [] : [];
+  // For display purposes, we use the first selected date's floor map.
+  const currentDate = selectedDates.length ? selectedDates[0] : "";
+  const currentDesks = currentDate ? desks[currentDate] || [] : [];
 
   // Filter desks based on availability
   const filteredDesks = currentDesks.filter((desk) => {
@@ -104,27 +118,30 @@ const Booking = () => {
   const bookedCount = currentDesks.filter(desk => desk.status === "booked").length;
 
   return (
-    <section className="flex flex-col items-center bg-[#f9fafb] dark:bg-[#0f1420] p-6 min-h-screen">
+    <section className="flex flex-col items-center bg-[#f9fafb] dark:bg-[#0f1420] p-6">
       <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
         Desk Booking
       </h2>
       <p className="mb-4 text-gray-600 dark:text-gray-300">
-        Select a desk, choose a date, and confirm your booking.
+        Select one or more dates, choose a desk, and confirm your booking.
       </p>
 
       {/* Booking Form */}
       <form onSubmit={handleSubmit} className="w-full max-w-lg bg-white dark:bg-[#1a1f2e] p-6 rounded-3xl shadow-lg mb-6">
-        {/* Select Date */}
+        {/* Select Dates */}
         <div className="mb-4">
           <label className="block text-gray-700 dark:text-gray-300 mb-2">
-            Select Date:
+            Select Dates:
           </label>
-          <input
-            type="date"
-            value={selectedDate}
-            onChange={handleDateChange}
-            className="w-full bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white px-4 py-2 rounded-lg outline-none focus:ring-2 focus:ring-green-500"
-            required
+          <DatePicker
+            multiple
+            value={selectedDates}
+            onChange={handleDatesChange}
+            format="YYYY-MM-DD"
+            className="w-full"
+            inputClassName="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+            placeholder="Select dates..."
+            placeholderClassName="text-gray-500 dark:text-gray-400"
           />
         </div>
 
@@ -148,48 +165,19 @@ const Booking = () => {
         <button
           type="submit"
           className="w-full bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-lg transition-all"
-          disabled={!selectedDesk || !selectedDate}
+          disabled={!selectedDesk || selectedDates.length === 0}
         >
           Confirm Booking
         </button>
       </form>
 
       {/* Desk Selection - Floor Map */}
-      {selectedDate && (
+      {currentDate && (
         <>
-          <div className="flex space-x-4 mb-4">
-            <button
-              className={`px-4 py-2 rounded-lg shadow-md ${
-                filter === "all" ? "bg-blue-500 text-white" : "bg-gray-300 dark:bg-gray-700"
-              }`}
-              onClick={() => setFilter("all")}
-            >
-              <MdFilterList className="inline-block mr-1" />
-              All Desks
-            </button>
-            <button
-              className={`px-4 py-2 rounded-lg shadow-md ${
-                filter === "available" ? "bg-green-500 text-white" : "bg-gray-300 dark:bg-gray-700"
-              }`}
-              onClick={() => setFilter("available")}
-            >
-              <FaCheckCircle className="inline-block mr-1" />
-              Available Desks
-            </button>
-            <button
-              className={`px-4 py-2 rounded-lg shadow-md ${
-                filter === "booked" ? "bg-red-500 text-white" : "bg-gray-300 dark:bg-gray-700"
-              }`}
-              onClick={() => setFilter("booked")}
-            >
-              <FaTimesCircle className="inline-block mr-1" />
-              Booked Desks
-            </button>
-          </div>
-
-          {/* Floor Map Container */}
           <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md w-full max-w-xl mb-6">
-            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Office Floor Map</h3>
+            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
+              Office Floor Map for {currentDate}
+            </h3>
             
             <div className="flex gap-8 justify-center">
               {/* Left section (2×3 grid) */}
@@ -237,7 +225,6 @@ const Booking = () => {
               <div className="relative">
                 {/* Window - vertical line */}
                 <div className="absolute right-0 top-0 bottom-0 w-2 bg-blue-100 dark:bg-blue-900 rounded-lg">
-                  {/* Window frame lines */}
                   <div className="absolute top-1/4 w-full h-px bg-blue-300 dark:bg-blue-700"></div>
                   <div className="absolute top-2/4 w-full h-px bg-blue-300 dark:bg-blue-700"></div>
                   <div className="absolute top-3/4 w-full h-px bg-blue-300 dark:bg-blue-700"></div>
@@ -288,11 +275,15 @@ const Booking = () => {
               <div className="flex justify-between items-center">
                 <div className="flex items-center">
                   <div className="w-3 h-3 bg-emerald-100 border border-emerald-200 rounded-full mr-1"></div>
-                  <span className="text-xs text-slate-600 dark:text-slate-300">Available: {availableCount}</span>
+                  <span className="text-xs text-slate-600 dark:text-slate-300">
+                    Available: {availableCount}
+                  </span>
                 </div>
                 <div className="flex items-center">
                   <div className="w-3 h-3 bg-red-100 border border-red-200 rounded-full mr-1"></div>
-                  <span className="text-xs text-slate-600 dark:text-slate-300">Booked: {bookedCount}</span>
+                  <span className="text-xs text-slate-600 dark:text-slate-300">
+                    Booked: {bookedCount}
+                  </span>
                 </div>
               </div>
             </div>
@@ -304,7 +295,7 @@ const Booking = () => {
       {confirmation && (
         <div className="mt-2 p-4 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 rounded-lg">
           <p className="font-bold">Booking Confirmed!</p>
-          <p>Date: {confirmation.date}</p>
+          <p>Dates: {confirmation.dates.join(", ")}</p>
           <p>Desk: {confirmation.desk}</p>
           <p>Recurrence: {confirmation.recurrence}</p>
         </div>
