@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useMsal } from '@azure/msal-react';
 import companyLogo from '../assets/bluebird.png';
 
 const Header = ({ isDarkMode, toggleTheme, isLoggedIn = true }) => {
@@ -7,25 +8,20 @@ const Header = ({ isDarkMode, toggleTheme, isLoggedIn = true }) => {
   const [userName, setUserName] = useState("User");
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
+  const { instance, accounts } = useMsal();
 
   // Get Microsoft user information when component mounts
   useEffect(() => {
     const getMicrosoftUserInfo = () => {
       try {
-        // Try to get user info from localStorage
-        const userInfo = localStorage.getItem('msal.account');
-        
-        if (userInfo) {
-          // Parse the JSON data if it exists
-          const parsedUserInfo = JSON.parse(userInfo);
-          
-          // Get the name from the account
-          // The exact path will depend on the MSAL structure
-          // This might need adjustment based on your specific implementation
-          if (parsedUserInfo && parsedUserInfo.name) {
-            setUserName(parsedUserInfo.name);
-          } else if (parsedUserInfo && parsedUserInfo.username) {
-            setUserName(parsedUserInfo.username);
+        // Check if we have accounts from MSAL
+        if (accounts && accounts.length > 0) {
+          const account = accounts[0];
+          // Set user name from account data
+          if (account.name) {
+            setUserName(account.name);
+          } else if (account.username) {
+            setUserName(account.username);
           }
         }
       } catch (error) {
@@ -33,11 +29,10 @@ const Header = ({ isDarkMode, toggleTheme, isLoggedIn = true }) => {
       }
     };
 
-    // If logged in, get the user info
     if (isLoggedIn) {
       getMicrosoftUserInfo();
     }
-  }, [isLoggedIn]);
+  }, [isLoggedIn, accounts]);
 
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
@@ -60,22 +55,27 @@ const Header = ({ isDarkMode, toggleTheme, isLoggedIn = true }) => {
     };
   }, [isDropdownOpen]);
 
-  // Implement logout function
+  // Implement logout function using MSAL
   const handleLogout = () => {
-    // Clear Microsoft authentication data
-    localStorage.removeItem('msal.account');
-    localStorage.removeItem('msal.token');
-    
-    // Clear any other MSAL-related items
-    // This might vary based on how Microsoft authentication is implemented
-    const msalKeys = Object.keys(localStorage).filter(key => key.startsWith('msal.'));
-    msalKeys.forEach(key => localStorage.removeItem(key));
-    
-    // Redirect to login page
-    navigate('/login');
-    
-    // Close the dropdown
-    setIsDropdownOpen(false);
+    if (instance) {
+      try {
+        // Close the dropdown first
+        setIsDropdownOpen(false);
+        // Use logoutRedirect for proper MSAL logout
+        instance.logoutRedirect({
+          postLogoutRedirectUri: window.location.origin,
+        }).catch(error => {
+          console.error("Logout redirect error:", error);
+          navigate('/');
+        });
+      } catch (error) {
+        console.error("Logout error:", error);
+        navigate('/');
+      }
+    } else {
+      console.warn("MSAL instance not available, doing manual logout");
+      navigate('/');
+    }
   };
 
   // If not logged in, don't render the header
@@ -145,8 +145,6 @@ const Header = ({ isDarkMode, toggleTheme, isLoggedIn = true }) => {
               {/* Dropdown Menu */}
               {isDropdownOpen && (
                 <div className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 py-1 z-10">
-                  
-                  
                   <button
                     onClick={handleLogout}
                     className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
