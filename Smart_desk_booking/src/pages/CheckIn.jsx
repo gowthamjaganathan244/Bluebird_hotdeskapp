@@ -9,7 +9,6 @@ const CheckIn = () => {
   const [locationError, setLocationError] = useState(null);
   const [locationPermission, setLocationPermission] = useState("prompt");
 
-  // Update current time every minute
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentTime(new Date());
