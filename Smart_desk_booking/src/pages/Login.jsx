@@ -1,55 +1,40 @@
 import React, { useState, useEffect } from 'react';
+import { useMsal } from "@azure/msal-react";
+import { loginRequest } from "../authConfig";
 import companyLogo from '../assets/bluebird.png';
+import { useNavigate } from 'react-router-dom';
 
-const Login = () => {
-  const [darkMode, setDarkMode] = useState(false);
-
-  // Check for user's preferred color scheme on initial load
+const Login = ({ isDarkMode, toggleTheme }) => {
+  const { instance, accounts } = useMsal();
+  const navigate = useNavigate();
+  
+  // Check if user is already signed in
   useEffect(() => {
-    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      setDarkMode(true);
+    if (accounts.length > 0) {
+      // User is already signed in, redirect to home
+      navigate('/home');
     }
-    
-    // Apply dark mode class to document
-    if (darkMode) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
+  }, [accounts, navigate]);
+
+  const handleLogin = async () => {
+    try {
+      // Use MSAL instance to handle login
+      console.log("Initiating Microsoft authentication flow...");
+      await instance.loginRedirect(loginRequest);
+    } catch (error) {
+      console.error("Login error:", error);
     }
-  }, [darkMode]); // Run when darkMode changes
-
-  const toggleDarkMode = () => {
-    setDarkMode(!darkMode);
-  };
-
-  const handleLogin = () => {
-    // Microsoft SSO Authentication configuration
-    const microsoftAuthUrl = "https://login.microsoftonline.com/common/oauth2/v2.0/authorize";
-    const clientId = "0713112a-58a6-41d8-ab85-1b01f9fb2649";
-    const redirectUri = encodeURIComponent(window.location.origin + "/home");
-    const responseType = "code";
-    const scope = encodeURIComponent("openid profile email");
-    const state = encodeURIComponent(JSON.stringify({ returnTo: "/home" }));
-    
-    // Construct the full authorization URL
-    const authUrl = `${microsoftAuthUrl}?client_id=${clientId}&response_type=${responseType}&redirect_uri=${redirectUri}&scope=${scope}&state=${state}&response_mode=query`;
-    
-    // Log the authentication attempt
-    console.log("Initiating Microsoft authentication flow...");
-    
-    // Redirect to Microsoft's login page
-    window.location.href = authUrl;
   };
 
   return (
-    <div className={`flex items-center justify-center min-h-screen px-4 ${darkMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
+    <div className={`flex items-center justify-center min-h-screen px-4 ${isDarkMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
       {/* Dark mode toggle button - positioned at top right */}
       <button 
-        className={`absolute top-4 right-4 p-2 rounded-full ${darkMode ? 'bg-gray-700' : 'bg-gray-200'} transition-colors duration-200`}
-        onClick={toggleDarkMode}
+        className={`absolute top-4 right-4 p-2 rounded-full ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'} transition-colors duration-200`}
+        onClick={toggleTheme}
         aria-label="Toggle dark mode"
       >
-        {darkMode ? (
+        {isDarkMode ? (
           <svg className="w-5 h-5 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
           </svg>
@@ -60,7 +45,7 @@ const Login = () => {
         )}
       </button>
 
-      <div className={`w-full max-w-md sm:max-w-lg md:max-w-xl ${darkMode ? 'bg-gray-800' : 'bg-white'} rounded-3xl shadow-lg transition-all duration-300 transform hover:scale-105 mx-auto`}>
+      <div className={`w-full max-w-md sm:max-w-lg md:max-w-xl ${isDarkMode ? 'bg-gray-800' : 'bg-white'} rounded-3xl shadow-lg transition-all duration-300 transform hover:scale-105 mx-auto`}>
         <div className="p-4 sm:p-6 md:p-8 flex flex-col items-center">
           {/* Company logo centered - responsive sizing */}
           <div className="flex flex-col items-center justify-center mb-4 sm:mb-6 md:mb-8 animate-fadeIn">
@@ -72,9 +57,9 @@ const Login = () => {
                 className="w-full h-full object-contain" 
               />
             </div>
-            <div className={`text-center mt-2 animate-fadeIn ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+            <div className={`text-center mt-2 animate-fadeIn ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
               <h1 className="text-xl sm:text-2xl font-bold mb-1">Bluebird</h1>
-              <p className={`text-xs sm:text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Desk Booking</p>
+              <p className={`text-xs sm:text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Desk Booking</p>
             </div>
           </div>
           
@@ -82,7 +67,7 @@ const Login = () => {
           <button
             onClick={handleLogin}
             className={`w-full flex items-center justify-center gap-2 sm:gap-3
-                    ${darkMode ? 'bg-blue-600 hover:bg-blue-700' : 'bg-[#0f1420] hover:bg-[#0f1420]/90'}
+                    ${isDarkMode ? 'bg-blue-600 hover:bg-blue-700' : 'bg-[#0f1420] hover:bg-[#0f1420]/90'}
                     text-white py-2 sm:py-3 px-3 sm:px-4 rounded-lg 
                     transition-all duration-300 transform hover:translate-y-1
                     focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50`}
