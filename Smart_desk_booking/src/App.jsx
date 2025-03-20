@@ -1,8 +1,7 @@
+// src/App.jsx
 import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from "react-router-dom";
-import { MsalProvider } from "@azure/msal-react";
-import { PublicClientApplication } from "@azure/msal-browser";
-import { msalConfig } from "./authConfig";
+import { useMsal } from "@azure/msal-react";
 
 // Components
 import Header from "./components/Header";
@@ -16,14 +15,20 @@ import CheckIn from "./pages/CheckIn";
 import Reports from "./pages/Reports";
 import AdminDashboard from "./pages/AdminDashboard";
 
-
-// Initialize MSAL instance
-const msalInstance = new PublicClientApplication(msalConfig);
-
-// Wrapper component to access location
+// Wrapper component to access location and handle authentication
 const AppContent = () => {
   const location = useLocation();
+  const { accounts } = useMsal();
   const isLoginPage = location.pathname === "/";
+
+  // Redirect to login if not authenticated and not on login page
+  useEffect(() => {
+    if (accounts.length === 0 && !isLoginPage) {
+      // Save the current path for potential redirect after login
+      sessionStorage.setItem('redirectPath', location.pathname);
+      window.location.href = "/";
+    }
+  }, [accounts.length, isLoginPage, location.pathname]);
   
   // Load theme from localStorage on mount
   const [isDarkMode, setIsDarkMode] = useState(() => {
@@ -60,8 +65,6 @@ const AppContent = () => {
             <Route path="/check-in" element={<CheckIn />} />
             <Route path="/reports" element={<Reports />} />
             <Route path="/admin-dashboard" element={<AdminDashboard />} />
-            {/* Add the profile route */}
-            
             
             {/* Redirect unknown routes to login */}
             <Route path="*" element={<Navigate to="/" />} />
@@ -77,11 +80,9 @@ const AppContent = () => {
 
 function App() {
   return (
-    <MsalProvider instance={msalInstance}>
-      <Router>
-        <AppContent />
-      </Router>
-    </MsalProvider>
+    <Router>
+      <AppContent />
+    </Router>
   );
 }
 
