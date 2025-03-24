@@ -144,15 +144,24 @@ const Header = ({ isDarkMode, toggleTheme, isLoggedIn = true }) => {
               
               {/* Dropdown Menu */}
               {isDropdownOpen && (
-                <div className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 py-1 z-10">
-                  <button
-                    onClick={handleLogout}
-                    className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                  >
-                    Logout
-                  </button>
-                </div>
-              )}
+  <div className="absolute right-0 mt-2 w-64 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 py-2 z-10">
+    <div className="px-4 py-2 text-sm text-blue-600 font-semibold">
+      My Profile
+    </div>
+    <div className="border-t border-gray-200 my-1" />
+    <div className="px-4 py-2 text-sm text-gray-700">
+      <div className="font-medium">{userName}</div>
+      <div className="text-xs text-gray-500">{accounts[0]?.username}</div>
+    </div>
+    <div className="border-t border-gray-200 my-1" />
+    <button
+      onClick={handleLogout}
+      className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+    >
+      Logout
+    </button>
+  </div>
+)}
             </div>
           </div>
         </nav>
