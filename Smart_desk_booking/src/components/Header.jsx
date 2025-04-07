@@ -84,16 +84,16 @@ const Header = ({ isDarkMode, toggleTheme, isLoggedIn = true }) => {
   }
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 border-b bg-white shadow-sm">
-      <div className="container mx-auto">
-        <nav className="flex items-center justify-between h-16 px-4">
+    <header className="fixed top-0 left-0 right-0 z-50 border-b bg-white shadow-md rounded-b-md backdrop-blur-sm bg-opacity-90">
+      <div className="container mx-auto max-w-4xl">
+        <nav className="flex items-center justify-between h-14 px-6">
           <Link to="/" className="flex items-center space-x-2">
             <img
               src={companyLogo}
               alt="Bluebird Logo"
-              className="w-12 h-12 text-blue-500 flex-shrink-0"
+              className="w-10 h-10 text-blue-500 flex-shrink-0"
             />
-            <h1 className="text-3xl font-bold" style={{ color: '#0C184F' }}>Bluebird</h1>
+            <h1 className="text-2xl font-bold" style={{ color: '#0C184F' }}>Bluebird</h1>
           </Link>
           
           <div className="flex items-center space-x-4">
@@ -128,7 +128,7 @@ const Header = ({ isDarkMode, toggleTheme, isLoggedIn = true }) => {
                 aria-expanded={isDropdownOpen}
                 aria-haspopup="true"
               >
-                <div className="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center">
+                <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center shadow">
                   <span className="font-medium text-sm">{userName.charAt(0).toUpperCase()}</span>
                 </div>
                 <span className="font-medium hidden sm:inline">{userName}</span>
@@ -144,24 +144,24 @@ const Header = ({ isDarkMode, toggleTheme, isLoggedIn = true }) => {
               
               {/* Dropdown Menu */}
               {isDropdownOpen && (
-  <div className="absolute right-0 mt-2 w-64 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 py-2 z-10">
-    <div className="px-4 py-2 text-sm text-blue-600 font-semibold">
-      My Profile
-    </div>
-    <div className="border-t border-gray-200 my-1" />
-    <div className="px-4 py-2 text-sm text-gray-700">
-      <div className="font-medium">{userName}</div>
-      <div className="text-xs text-gray-500">{accounts[0]?.username}</div>
-    </div>
-    <div className="border-t border-gray-200 my-1" />
-    <button
-      onClick={handleLogout}
-      className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
-    >
-      Logout
-    </button>
-  </div>
-)}
+                <div className="absolute right-0 mt-2 w-64 rounded-xl shadow-xl bg-white ring-1 ring-black ring-opacity-5 py-2 z-10">
+                  <div className="px-4 py-2 text-sm text-blue-600 font-semibold">
+                    My Profile
+                  </div>
+                  <div className="border-t border-gray-200 my-1" />
+                  <div className="px-4 py-2 text-sm text-gray-700">
+                    <div className="font-medium">{userName}</div>
+                    <div className="text-xs text-gray-500">{accounts[0]?.username}</div>
+                  </div>
+                  <div className="border-t border-gray-200 my-1" />
+                  <button
+                    onClick={handleLogout}
+                    className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 hover:rounded-md mx-1"
+                  >
+                    Logout
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </nav>
