@@ -317,82 +317,101 @@ const Home = () => {
           )}
         </div>
 
-        {/* My Bookings */}
-        <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-lg p-6 mt-6">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white flex items-center">
-              <FaCalendarCheck className="mr-2 text-indigo-500 dark:text-indigo-400" />
-              My Bookings
-            </h2>
-            <button 
-              onClick={fetchMyBookings}
-              className="px-3 py-1.5 bg-indigo-50 dark:bg-indigo-800 text-indigo-600 dark:text-indigo-300 rounded-lg text-sm font-medium"
+        {/* My Bookings - Compact Premium Styled */}
+<div className="bg-white dark:bg-gray-800 rounded-3xl shadow-lg p-6 mt-6">
+  <div className="flex justify-between items-center mb-4">
+    <h2 className="text-xl font-semibold text-gray-900 dark:text-white flex items-center">
+      <FaCalendarCheck className="mr-2 text-indigo-500 dark:text-indigo-400" />
+      My Bookings
+    </h2>
+    <button 
+      onClick={fetchMyBookings}
+      className="px-2.5 py-1 bg-indigo-50 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-300 rounded-lg text-xs font-medium hover:bg-indigo-100 dark:hover:bg-indigo-800/50 transition-colors flex items-center"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+      </svg>
+      Refresh
+    </button>
+  </div>
+
+  {myBookings.length > 0 ? (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+      {myBookings.map((booking) => (
+        <div 
+          key={`${booking.DeskID}-${booking.Date}`} 
+          className="bg-gray-50 dark:bg-gray-700 rounded-xl p-3 border border-gray-100 dark:border-gray-600 hover:shadow-sm transition-shadow duration-200"
+        >
+          <div className="flex justify-between items-center">
+            <div className="flex items-center">
+              <div className="w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center text-blue-600 dark:text-blue-300 mr-2">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h6a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <div>
+                <div className="flex items-center">
+                  <p className="text-sm font-medium text-gray-900 dark:text-white">
+                    Desk {booking.DeskID}
+                  </p>
+                  <span className="ml-2 px-1.5 py-0.5 bg-green-100 dark:bg-green-800/40 text-green-700 dark:text-green-300 text-xs rounded-md flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-0.5" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                    <span className="text-[10px]">Confirmed</span>
+                  </span>
+                </div>
+                <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                  <Laptop size={12} className="mr-1" />
+                  <span>{new Date(booking.Date).toLocaleDateString('en-US', {
+                    weekday: 'short',
+                    month: 'short', 
+                    day: 'numeric'
+                  })}</span>
+                </div>
+              </div>
+            </div>
+            <button
+              onClick={() => handleCancelBooking(booking)}
+              className="ml-2 p-1.5 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 text-xs rounded-md hover:bg-red-100 dark:hover:bg-red-800/30 transition-colors"
+              title="Cancel booking"
             >
-              Refresh
+              <FaTrash size={10} />
             </button>
           </div>
-
-          {myBookings.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {myBookings.map((booking) => (
-                <div 
-                  key={`${booking.DeskID}-${booking.Date}`} 
-                  className="bg-gray-50 dark:bg-gray-700 rounded-xl p-4"
-                >
-                  <div className="flex justify-between">
-                    <div>
-                      <p className="text-lg font-medium text-gray-900 dark:text-white">
-                        Desk {booking.DeskID}
-                      </p>
-                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                        {new Date(booking.Date).toLocaleDateString('en-US', {
-                          weekday: 'long',
-                          month: 'short', 
-                          day: 'numeric'
-                        })}
-                      </p>
-                    </div>
-                    <div className="flex flex-col items-end justify-between">
-                      <span className="px-2 py-1 bg-green-100 dark:bg-green-800 text-green-700 dark:text-green-300 text-xs rounded-full">
-                        Confirmed
-                      </span>
-                      <button
-                        onClick={() => handleCancelBooking(booking)}
-                        className="mt-2 text-red-600 dark:text-red-400 text-sm font-medium flex items-center"
-                      >
-                        <FaTrash size={12} className="mr-1.5" />
-                        Cancel
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-8 bg-gray-50 dark:bg-gray-700 rounded-xl">
-              <p className="text-gray-500 dark:text-gray-400">You have no upcoming bookings.</p>
-              <Link to="/booking" className="inline-block mt-4 px-4 py-2 bg-indigo-500 text-white rounded-lg text-sm font-medium">
-                Book a Desk
-              </Link>
-            </div>
-          )}
         </div>
+      ))}
+    </div>
+  ) : (
+    <div className="text-center py-8 bg-gray-50 dark:bg-gray-700/30 rounded-xl border border-gray-100 dark:border-gray-600">
+      <div className="w-12 h-12 bg-gray-100 dark:bg-gray-600 rounded-full flex items-center justify-center mx-auto mb-3">
+        <Laptop size={20} className="text-gray-400 dark:text-gray-500" />
+      </div>
+      <p className="text-gray-600 dark:text-gray-300 text-sm font-medium">No bookings found</p>
+      
+    </div>
+  )}
+</div>
 
         {/* Recent Activity / Visual Desk View */}
         <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-lg p-6 mt-6">
-          <div className="flex justify-between items-center mb-4">
+          <div className="flex justify-between items-center mb-6">
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
               Recent Activity (Visual Desk View)
             </h2>
-            <div className="bg-white p-0 rounded border border-gray-200 datepicker-wrapper">
+          </div>
+          
+          <div className="bg-white dark:bg-gray-700 rounded-xl p-6 mb-6">
+            <div className="mb-4">
+              <label className="block text-gray-700 dark:text-gray-300 mb-2">Select Date:</label>
               <DatePicker
                 value={selectedDate}
                 onChange={handleDateChange}
                 format="YYYY-MM-DD"
-                placeholder="Select a date"
-                className="border-0 bg-transparent p-1.5 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                inputClass="bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                placeholder="Choose a date..."
                 mapDays={disableWeekends}
-                containerClassName="light-theme-calendar"
+                containerClassName="w-full"
               />
             </div>
           </div>
@@ -403,17 +422,24 @@ const Home = () => {
               <div className="grid grid-cols-2 gap-4">
                 {leftSectionDesks.map((desk) => (
                   <div key={desk.id}
-                    className={`w-24 h-16 rounded-md flex items-center justify-start p-2 
+                    className={`w-24 h-16 rounded-md flex flex-col justify-start p-2 
                     ${desk.status === "booked" 
                       ? 'bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800' 
                       : 'bg-white dark:bg-gray-700 border border-slate-200 dark:border-slate-600'}`}>
-                    <div className={`flex justify-center items-center rounded-full w-6 h-6 mr-2 
-                      ${desk.status === "booked" 
-                        ? 'bg-red-100 dark:bg-red-800 text-red-500 dark:text-red-300' 
-                        : 'bg-emerald-100 dark:bg-emerald-800 text-emerald-500 dark:text-emerald-300'}`}>
-                      {desk.status === "booked" ? <User size={14} /> : <Laptop size={14} />}
+                    <div className="flex items-center">
+                      <div className={`flex justify-center items-center rounded-full w-6 h-6 mr-2 
+                        ${desk.status === "booked" 
+                          ? 'bg-red-100 dark:bg-red-800 text-red-500 dark:text-red-300' 
+                          : 'bg-emerald-100 dark:bg-emerald-800 text-emerald-500 dark:text-emerald-300'}`}>
+                        {desk.status === "booked" ? <User size={14} /> : <Laptop size={14} />}
+                      </div>
+                      <span className="text-xs font-medium text-slate-700 dark:text-slate-300">{desk.name}</span>
                     </div>
-                    <span className="text-xs font-medium text-slate-700 dark:text-slate-300">{desk.name}</span>
+                    {desk.status === "booked" && desk.user && (
+                      <div className="text-[10px] text-red-500 dark:text-red-400 mt-1 ml-8 truncate">
+                        {desk.user}
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
@@ -432,24 +458,31 @@ const Home = () => {
                 <div className="grid grid-cols-1 gap-4 pr-4">
                   {rightSectionDesks.map((desk) => (
                     <div key={desk.id}
-                      className={`w-24 h-16 rounded-md flex items-center justify-start p-2 
+                      className={`w-24 h-16 rounded-md flex flex-col justify-start p-2 
                       ${desk.status === "booked" 
                         ? 'bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800' 
                         : 'bg-white dark:bg-gray-700 border border-slate-200 dark:border-slate-600'}`}>
-                      <div className={`flex justify-center items-center rounded-full w-6 h-6 mr-2 
-                        ${desk.status === "booked" 
-                          ? 'bg-red-100 dark:bg-red-800 text-red-500 dark:text-red-300' 
-                          : 'bg-emerald-100 dark:bg-emerald-800 text-emerald-500 dark:text-emerald-300'}`}>
-                        {desk.status === "booked" ? <User size={14} /> : <Laptop size={14} />}
+                      <div className="flex items-center">
+                        <div className={`flex justify-center items-center rounded-full w-6 h-6 mr-2 
+                          ${desk.status === "booked" 
+                            ? 'bg-red-100 dark:bg-red-800 text-red-500 dark:text-red-300' 
+                            : 'bg-emerald-100 dark:bg-emerald-800 text-emerald-500 dark:text-emerald-300'}`}>
+                          {desk.status === "booked" ? <User size={14} /> : <Laptop size={14} />}
+                        </div>
+                        <span className="text-xs font-medium text-slate-700 dark:text-slate-300">{desk.name}</span>
                       </div>
-                      <span className="text-xs font-medium text-slate-700 dark:text-slate-300">{desk.name}</span>
+                      {desk.status === "booked" && desk.user && (
+                        <div className="text-[10px] text-red-500 dark:text-red-400 mt-1 ml-8 truncate">
+                          {desk.user}
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
               </div>
             </div>
           ) : (
-            <p className="text-gray-500 dark:text-gray-400 mt-2">Select a date to view desk map.</p>
+            <p className="text-gray-500 dark:text-gray-400 text-center py-4">Select a date to view desk map.</p>
           )}
 
           {/* Status Bar */}

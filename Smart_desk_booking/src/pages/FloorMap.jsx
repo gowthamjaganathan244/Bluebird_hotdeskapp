@@ -21,7 +21,7 @@ const FloorMap = ({
               onClick={() => onDeskClick(desk.id)}
               className={`
                 w-24 h-16 rounded-md cursor-pointer transition-all duration-200
-                flex items-center justify-start p-2
+                flex flex-col justify-start p-2
                 ${desk.status === "booked" 
                   ? 'bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800' 
                   : 'bg-white dark:bg-gray-700 border border-slate-200 dark:border-slate-600'}
@@ -31,17 +31,24 @@ const FloorMap = ({
                 hover:border-blue-400 dark:hover:border-blue-400 hover:shadow
               `}
             >
-              <div className={`
-                flex justify-center items-center rounded-full w-6 h-6 mr-2
-                ${desk.status === "booked" 
-                  ? 'bg-red-100 dark:bg-red-900/50 text-red-500 dark:text-red-300' 
-                  : 'bg-emerald-100 dark:bg-emerald-900/50 text-emerald-500 dark:text-emerald-300'}
-              `}>
-                {desk.status === "booked" ? <User size={14} /> : <Laptop size={14} />}
+              <div className="flex items-center">
+                <div className={`
+                  flex justify-center items-center rounded-full w-6 h-6 mr-2
+                  ${desk.status === "booked" 
+                    ? 'bg-red-100 dark:bg-red-900/50 text-red-500 dark:text-red-300' 
+                    : 'bg-emerald-100 dark:bg-emerald-900/50 text-emerald-500 dark:text-emerald-300'}
+                `}>
+                  {desk.status === "booked" ? <User size={14} /> : <Laptop size={14} />}
+                </div>
+                <span className="text-xs font-medium text-slate-700 dark:text-slate-300">
+                  {desk.name}
+                </span>
               </div>
-              <span className="text-xs font-medium text-slate-700 dark:text-slate-300">
-                {desk.name}
-              </span>
+              {desk.status === "booked" && desk.user && (
+                <div className="text-[10px] text-red-500 dark:text-red-400 mt-1 ml-8 truncate">
+                   {desk.user.split('@')[0]}
+                </div>
+              )}
             </div>
           ))}
         </div>
@@ -64,7 +71,7 @@ const FloorMap = ({
                 onClick={() => onDeskClick(desk.id)}
                 className={`
                   w-24 h-16 rounded-md cursor-pointer transition-all duration-200
-                  flex items-center justify-start p-2
+                  flex flex-col justify-start p-2
                   ${desk.status === "booked" 
                     ? 'bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800' 
                     : 'bg-white dark:bg-gray-700 border border-slate-200 dark:border-slate-600'}
@@ -74,17 +81,24 @@ const FloorMap = ({
                   hover:border-blue-400 dark:hover:border-blue-400 hover:shadow
                 `}
               >
-                <div className={`
-                  flex justify-center items-center rounded-full w-6 h-6 mr-2
-                  ${desk.status === "booked" 
-                    ? 'bg-red-100 dark:bg-red-900/50 text-red-500 dark:text-red-300' 
-                    : 'bg-emerald-100 dark:bg-emerald-900/50 text-emerald-500 dark:text-emerald-300'}
-                `}>
-                  {desk.status === "booked" ? <User size={14} /> : <Laptop size={14} />}
+                <div className="flex items-center">
+                  <div className={`
+                    flex justify-center items-center rounded-full w-6 h-6 mr-2
+                    ${desk.status === "booked" 
+                      ? 'bg-red-100 dark:bg-red-900/50 text-red-500 dark:text-red-300' 
+                      : 'bg-emerald-100 dark:bg-emerald-900/50 text-emerald-500 dark:text-emerald-300'}
+                  `}>
+                    {desk.status === "booked" ? <User size={14} /> : <Laptop size={14} />}
+                  </div>
+                  <span className="text-xs font-medium text-slate-700 dark:text-slate-300">
+                    {desk.name}
+                  </span>
                 </div>
-                <span className="text-xs font-medium text-slate-700 dark:text-slate-300">
-                  {desk.name}
-                </span>
+                {desk.status === "booked" && desk.user && (
+                  <div className="text-[10px] text-red-500 dark:text-red-400 mt-1 ml-8 truncate">
+                    {desk.user.split('@')[0]}
+                  </div>
+                )}
               </div>
             ))}
           </div>
