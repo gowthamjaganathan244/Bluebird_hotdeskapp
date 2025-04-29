@@ -6,7 +6,8 @@ import {
   FaChartBar,
   FaSignInAlt,
   FaUserCheck,
-  FaTrash
+  FaTrash,
+  FaMicrosoft
 } from "react-icons/fa";
 import { Laptop, User } from "lucide-react";
 import DatePicker from "react-multi-date-picker";
@@ -68,7 +69,9 @@ const Home = () => {
       const data = await res.json();
   
       // ✅ Filter upcoming bookings only
-      const today = new Date().toISOString().split("T")[0];
+      // New local‑date approach—no split needed
+      const today = new Date().toLocaleDateString("en-CA");
+
       const upcoming = (data || [])
         .filter(b => b.Date >= today)
         .sort((a, b) => new Date(a.Date) - new Date(b.Date));
@@ -130,7 +133,8 @@ const Home = () => {
 
   const fetchTodaysCheckIns = async () => {
     try {
-      const todayStr = new Date().toISOString().split("T")[0];
+      // Quick & easy via en‑CA locale
+      const todayStr = new Date().toLocaleDateString("en-CA");
       const res = await fetch("https://prod-03.australiaeast.logic.azure.com:443/workflows/c4dbeafcb9a74da399c610196f2cf7c7/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=cQ0GfEJCsHONlpUVSRVfASVFx0XVIEG6nEnrpCLujzU", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -195,7 +199,9 @@ const Home = () => {
   const rightSectionDesks = deskStatusView.filter(d => d.id > 6);
   const availableCount = deskStatusView.filter(d => d.status === "available").length;
   const bookedCount = deskStatusView.filter(d => d.status === "booked").length;
-  const todayStr = new Date().toISOString().split("T")[0];
+  
+  const todayStr = new Date().toLocaleDateString("en-CA");
+
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -259,14 +265,19 @@ const Home = () => {
                   </div>
                 </Link>
                 
-                <Link to="/support" className="block w-full p-4 bg-amber-50 dark:bg-amber-900/20 rounded-xl hover:bg-amber-100 dark:hover:bg-amber-800/40 transition-colors">
+                <a 
+                  href="https://teams.microsoft.com/l/chat/0/0?users=support@yourcompany.com" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="block w-full p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl hover:bg-blue-100 dark:hover:bg-blue-800/40 transition-colors"
+                >
                   <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-lg bg-amber-500 dark:bg-amber-600 flex items-center justify-center text-white">
-                      <FaSignInAlt size={18} />
+                    <div className="w-10 h-10 rounded-lg bg-blue-500 dark:bg-blue-600 flex items-center justify-center text-white">
+                      <FaMicrosoft size={18} />
                     </div>
-                    <span className="font-medium text-gray-800 dark:text-gray-200">Help & Support</span>
+                    <span className="font-medium text-gray-800 dark:text-gray-200">Teams Support</span>
                   </div>
-                </Link>
+                </a>
               </div>
             </div>
           </div>
