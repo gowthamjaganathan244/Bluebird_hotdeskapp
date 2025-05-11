@@ -91,9 +91,7 @@ src/
 | Application blank or crashes | Check browser console for missing config errors |
 
 
-## Contact for Support
-For setup issues or questions, please contact:
-**admin@bluebirdadvisory.com.au**
+
 
 
 ---
