@@ -1,4 +1,4 @@
-# Smart Hot Desk Booking System (Local Setup Guide)
+# Smart Hot Desk Booking System 
 
 ## Project Overview
 This project is a React-based hot desk booking system that integrates with Microsoft 365 services such as Azure Active Directory for login authentication, SharePoint Lists for data storage, and Outlook Calendar via Power Automate for meeting invites.
